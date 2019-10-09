@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: hiberly
+      POSTGRES_DB: hiberly_gateway
+  web:
+    build: .
+    command: gunicorn hiberly_gateway.wsgi --bind 0.0.0.0:8000 --log-file -
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    environment:
+      IS_DOCKER: "true"
+      DEBUG: 1
+    depends_on:
+      - db
