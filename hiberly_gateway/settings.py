@@ -135,6 +135,7 @@ LOGIN_URL = '/login/gitlab'
 OAUTH2_PROVIDER = {
     'SCOPES': {
         'api': 'Api',
+        'read_user': 'Read_user',
     }
 }
 
@@ -146,5 +147,6 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # EDIT THESE
-SOCIAL_AUTH_GITLAB_KEY = '<your gitlab key>'
-SOCIAL_AUTH_GITLAB_SECRET = '<your gitlab secret>'
+SOCIAL_AUTH_GITLAB_KEY = os.environ.get("GITLAB_KEY", False)
+SOCIAL_AUTH_GITLAB_SECRET = os.environ.get("GITLAB_SECRET", False)
+GITLAB_URL = os.environ.get("GITLAB_URL", 'https://gitlab.com')

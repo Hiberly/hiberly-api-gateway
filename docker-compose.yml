@@ -8,13 +8,16 @@ services:
       POSTGRES_DB: hiberly_gateway
   web:
     build: .
-    command: gunicorn hiberly_gateway.wsgi --bind 0.0.0.0:8000 --log-file -
+    command: gunicorn hiberly_gateway.wsgi --bind 0.0.0.0:5000 --log-file -
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
+      - "5000:5000"
     environment:
       IS_DOCKER: "true"
       DEBUG: 1
+      GITLAB_KEY: "your key"
+      GITLAB_SECRET: "your secret"
+      GITLAB_URL: "https://gitlab.com"
     depends_on:
       - db

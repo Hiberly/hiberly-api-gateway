@@ -17,6 +17,7 @@ from django.contrib import admin
 import requests
 from django.urls import path, re_path, include
 from django.http import JsonResponse, HttpResponse
+from django.conf import settings
 
 from social_django.models import UserSocialAuth
 import json
@@ -28,12 +29,12 @@ def gitlab_api_proxy(request, return_request=False):
         return HttpResponse('No access code provided', status=401)
     user = AccessToken.objects.get(token=request.GET['access_token']).user
     social = user.social_auth.get(provider='gitlab')
-    request = requests.get('https://gitlab.com%s?access_token=%s' % (request.path, social.extra_data['access_token']))
+    request = requests.get('%s%s?access_token=%s' % (settings.GITLAB_URL, request.path, social.extra_data['access_token']))
     if return_request:
         return request
     return HttpResponse(request.content, content_type="application/json")
 
-def gitlab_changes_proxy(request, id=None, merge_request_iid=None):
+def gitlab_changes_proxy(request, **kwargs):
     response = gitlab_api_proxy(request, return_request=True).json()
     for change in response['changes']:
         change['diff'] = 'REDACTED'
@@ -45,6 +46,9 @@ urlpatterns = [
     path('', include('social_django.urls', namespace='social')),
     path('api/v4/user', gitlab_api_proxy),
     path('api/v4/merge_requests', gitlab_api_proxy),
+    path('api/v4/projects/<int:id>', gitlab_api_proxy),
     path('api/v4/projects/<int:id>/merge_requests/<int:merge_request_iid>/changes', gitlab_changes_proxy),
+    path('api/v4/projects/<int:id>/merge_requests/<int:merge_request_iid>/notes', gitlab_changes_proxy),
+    path('api/v4/projects/<int:id>/merge_requests/<int:merge_request_iid>/notes/<int:notes_id>', gitlab_changes_proxy),
     path('admin/', admin.site.urls),
 ]
