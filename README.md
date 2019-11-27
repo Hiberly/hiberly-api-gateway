@@ -1,4 +1,4 @@
-# Hibely GitLab API Gateway
+# Hiberly GitLab API Gateway
 
 This API gateway allows you to let your users use Hiberly on GitLab without giving access to your code.
 
